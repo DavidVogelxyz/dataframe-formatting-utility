@@ -69,12 +69,12 @@ def menu_options(arg_count, path, filetype, selection):
 
             if filetype == "dir":
                 for file in glob.glob(os.path.join(path, "*.csv")):
-                    prep_csv_for_dating(file, df_temp)
-                merge_csv(path, EXPORT_DIR, df_temp, selection)
+                    date = prep_csv_for_dating(file, df_temp)
+                    merge_csv(path, EXPORT_DIR, df_temp, selection, date)
 
             if filetype == "file":
-                prep_csv_for_dating(path, df_temp)
-                merge_csv(path, EXPORT_DIR, df_temp, selection)
+                date = prep_csv_for_dating(path, df_temp)
+                merge_csv(path, EXPORT_DIR, df_temp, selection, date)
         case "5":
             EXPORT_DIR = "clean"
             if not os.path.isdir(EXPORT_DIR):
@@ -123,7 +123,7 @@ def prep_csv_for_merge(path, df_temp):
         print("ERROR:", path, "not appended --", err)
 
 
-def merge_csv(path, EXPORT_DIR, df_temp, selection):
+def merge_csv(path, EXPORT_DIR, df_temp, selection, date):
     df_merged = pd.concat(df_temp, ignore_index=True)
 
     # avoid magic numbers!
@@ -175,6 +175,8 @@ def prep_csv_for_dating(file, df_temp):
     df.insert(0, "date", col)
 
     df_temp.append(df)
+
+    return date
 
 
 def split_columns_combine(df):
