@@ -11,7 +11,101 @@ menu['2'] = "Merge data."
 menu['3'] = "Sort data."
 menu['4'] = "Date to column."
 menu['5'] = "Merge split columns."
-menu['6'] = "Exit"
+menu['6'] = "the best option"
+menu['7'] = "Exit"
+
+
+def create_dir(dir):
+    if not os.path.isdir(dir):
+        os.makedirs(dir)
+
+
+def csv_to_dataframe(file):
+    try:
+        df = pd.read_csv(file)
+    except Exception as err:
+        print("ERROR:", file, "failed to process into a dataframe --", err)
+
+    return df
+
+
+def get_date_from_csv(df, file):
+    date = df.loc[0, "date"]
+    date = pd.to_datetime(
+        date,
+        format="%m/%d/%Y"
+    )
+
+    print(file, "is dated", date)
+
+    return date
+
+
+def split_col_merge(df):
+    sets_of_duplicates = df.columns.tolist().count(df.columns[0])
+    group_size = len(df.columns) // sets_of_duplicates
+    chunks = []
+
+    # Split into chunks and concatenate
+    for i in range(sets_of_duplicates):
+        start = i * group_size
+        end = start + group_size
+        chunk = df.iloc[:, start:end]
+
+        # Rename columns to match the first group
+        chunk.columns = df.columns[:group_size]
+        chunks.append(chunk)
+
+    # Concatenate all chunks
+    df = pd.concat(chunks, ignore_index=True)
+
+    # Drop empty rows
+    df = df.dropna(how='all')
+
+    return df
+
+
+def create_df_with_date_column(df, date):
+    df.columns = df.iloc[1]
+    df = df[2:].reset_index(drop=True)
+    if not df.columns.is_unique:
+        df = split_col_merge(df)
+    df["date"] = date
+    col = df.pop("date")
+    df.insert(0, "date", col)
+
+    return df
+
+
+def process_date_from_df(df, path):
+    date = get_date_from_csv(df, path)
+    df = create_df_with_date_column(df, date)
+
+    return df
+
+
+def date_to_column(path, EXPORT_DIR):
+    df = csv_to_dataframe(path)
+    df = process_date_from_df(df, path)
+    save_csv(df, EXPORT_DIR, path)
+
+
+def split_cols_combine(path, EXPORT_DIR):
+    df = csv_to_dataframe(path)
+    df = split_col_merge(df)
+    save_csv(df, EXPORT_DIR, path)
+
+
+def save_csv(df, EXPORT_DIR, file):
+    try:
+        df.to_csv(
+            os.path.join(EXPORT_DIR, os.path.basename(file)),
+            encoding='utf-8',
+            index=False,
+            header=True
+        )
+    except Exception as err:
+        print("ERROR:", file, "not saved --", err)
 
 
 def menu_options(arg_count, path, filetype, selection):
@@ -59,33 +153,33 @@ def menu_options(arg_count, path, filetype, selection):
                 process_csv(path, EXPORT_DIR, selection)
         case "4":
             EXPORT_DIR = "clean"
-            if not os.path.isdir(EXPORT_DIR):
-                os.makedirs(EXPORT_DIR)
-
-            try:
-                df_temp
-            except NameError:
-                df_temp = []
+            create_dir(EXPORT_DIR)
 
             if filetype == "dir":
                 for file in glob.glob(os.path.join(path, "*.csv")):
-                    date = prep_csv_for_dating(file, df_temp)
-                    merge_csv(path, EXPORT_DIR, df_temp, selection, date)
-
+                    date_to_column(path, EXPORT_DIR)
             if filetype == "file":
-                date = prep_csv_for_dating(path, df_temp)
-                merge_csv(path, EXPORT_DIR, df_temp, selection, date)
+                date_to_column(path, EXPORT_DIR)
         case "5":
             EXPORT_DIR = "clean"
-            if not os.path.isdir(EXPORT_DIR):
-                os.makedirs(EXPORT_DIR)
+            create_dir(EXPORT_DIR)
 
             if filetype == "dir":
                 for file in glob.glob(os.path.join(path, "*.csv")):
-                    process_csv(file, EXPORT_DIR, selection)
+                    split_cols_combine(path, EXPORT_DIR)
             if filetype == "file":
-                process_csv(path, EXPORT_DIR, selection)
+                split_cols_combine(path, EXPORT_DIR)
         case "6":
+            EXPORT_DIR = "clean"
+            create_dir(EXPORT_DIR)
+
+            if filetype == "dir":
+                sys.exit("Stop.")
+            if filetype == "file":
+                df = csv_to_dataframe(path)
+                df = process_date_from_df(df, path)
+                save_csv(df, EXPORT_DIR, path)
+        case "7":
             sys.exit("Exiting the program now.")
         case _:
             print("Unknown option selected. Skipping this path.")
@@ -193,7 +287,7 @@ def split_columns_combine(df):
 def menu_loop(arg_count, path, filetype):
     stoploop = False
 
-    while stoploop == False:
+    if stoploop is False:
         options = sorted(menu.keys())
         for entry in options:
             print(entry, "-", menu[entry])
