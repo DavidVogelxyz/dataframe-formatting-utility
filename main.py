@@ -14,7 +14,6 @@ menu['5'] = "Merge split columns."
 menu['6'] = "the best option"
 menu['7'] = "Exit"
 
-
 def create_dir(dir):
     if not os.path.isdir(dir):
         os.makedirs(dir)
@@ -111,6 +110,7 @@ def save_csv(df, EXPORT_DIR, file):
 def menu_options(arg_count, path, filetype, selection):
     match selection:
         case "1":
+            selection = "save"
             EXPORT_DIR = "clean"
             if not os.path.isdir(EXPORT_DIR):
                 os.makedirs(EXPORT_DIR)
@@ -121,6 +121,7 @@ def menu_options(arg_count, path, filetype, selection):
             if filetype == "file":
                 process_csv(path, EXPORT_DIR, selection)
         case "2":
+            selection = "merge"
             EXPORT_DIR = "clean"
             if not os.path.isdir(EXPORT_DIR):
                 os.makedirs(EXPORT_DIR)
@@ -142,6 +143,7 @@ def menu_options(arg_count, path, filetype, selection):
                 prep_csv_for_merge(path, df_temp)
                 merge_csv(path, EXPORT_DIR, df_temp, selection)
         case "3":
+            selection = "sort"
             EXPORT_DIR = "sorted"
             if not os.path.isdir(EXPORT_DIR):
                 os.makedirs(EXPORT_DIR)
@@ -152,6 +154,7 @@ def menu_options(arg_count, path, filetype, selection):
             if filetype == "file":
                 process_csv(path, EXPORT_DIR, selection)
         case "4":
+            selection = "date"
             EXPORT_DIR = "clean"
             create_dir(EXPORT_DIR)
 
@@ -161,6 +164,7 @@ def menu_options(arg_count, path, filetype, selection):
             if filetype == "file":
                 date_to_column(path, EXPORT_DIR)
         case "5":
+            selection = "splitcolumns"
             EXPORT_DIR = "clean"
             create_dir(EXPORT_DIR)
 
@@ -170,6 +174,7 @@ def menu_options(arg_count, path, filetype, selection):
             if filetype == "file":
                 split_cols_combine(path, EXPORT_DIR)
         case "6":
+            selection = "best"
             EXPORT_DIR = "clean"
             create_dir(EXPORT_DIR)
 
@@ -191,10 +196,9 @@ def process_csv(file, EXPORT_DIR, selection):
     try:
         df = pd.read_csv(file)
 
-        # avoid magic numbers!
-        if selection == "3":
+        if selection == "sort":
             df = clean_data(df)
-        if selection == "5":
+        if selection == "splitcolumns":
             df = split_columns_combine(df)
 
         df.to_csv(
@@ -220,11 +224,10 @@ def prep_csv_for_merge(path, df_temp):
 def merge_csv(path, EXPORT_DIR, df_temp, selection, date):
     df_merged = pd.concat(df_temp, ignore_index=True)
 
-    # avoid magic numbers!
-    if selection == "2":
+    if selection == "merge":
         # FIX: what happens if `newname` includes `/`?
         newname = os.path.basename(path)
-    if selection == "4":
+    if selection == "date":
         try:
             date
         except NameError:
