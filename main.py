@@ -14,6 +14,7 @@ menu['5'] = "Merge split columns."
 menu['6'] = "the best option"
 menu['7'] = "Exit"
 
+
 def create_dir(dir):
     if not os.path.isdir(dir):
         os.makedirs(dir)
@@ -184,6 +185,11 @@ def menu_options(arg_count, path, filetype, selection):
                 df = csv_to_dataframe(path)
                 df = process_date_from_df(df, path)
                 save_csv(df, EXPORT_DIR, path)
+                print()
+                print("The program saved the following dataframe:")
+                #df.info()
+                print(df)
+                print()
         case "7":
             sys.exit("Exiting the program now.")
         case _:
@@ -338,6 +344,12 @@ def parse_args():
         print()
         print("   ", path)
         print()
+        if filetype == "file":
+            df = csv_to_dataframe(path)
+            print("Dataframe:")
+            #df.info()
+            print(df)
+            print()
         menu_loop(arg_count, path, filetype)
         print()
 
