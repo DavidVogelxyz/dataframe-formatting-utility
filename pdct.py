@@ -64,23 +64,34 @@ class process_df:
 
     def remove_superfluous(df):
         try:
-            # Loop over rows to check number of non-NaN values
-            for i, row in df.iterrows():
-                non_nan_mask = row.notna()
-                if non_nan_mask.sum() == 1:
-                    # Get the column where the only non-NaN value is
-                    col_idx = non_nan_mask.idxmax()
-                    # Safe assignment without chained access
-                    df.iat[i, col_idx] = np.nan
+            loop_superfluous = True
 
-            # Loop over columns to check number of non-NaN values
-            for j in df.columns:
-                non_nan_mask = df[j].notna()
-                if non_nan_mask.sum() == 1:
-                    # Get the row where the only non-NaN value is
-                    row_idx = non_nan_mask.idxmax()
-                    # Safe assignment using iat
-                    df.iat[row_idx, j] = np.nan
+            while loop_superfluous is True:
+                count = 0
+
+                # Loop over rows to check number of non-NaN values
+                for i, row in df.iterrows():
+                    non_nan_mask = row.notna()
+                    if non_nan_mask.sum() == 1:
+                        # Get the column where the only non-NaN value is
+                        col_idx = non_nan_mask.idxmax()
+                        # Safe assignment without chained access
+                        df.iat[i, col_idx] = np.nan
+                        count += 1
+
+                # Loop over columns to check number of non-NaN values
+                for j in df.columns:
+                    non_nan_mask = df[j].notna()
+                    if non_nan_mask.sum() == 1:
+                        # Get the row where the only non-NaN value is
+                        row_idx = non_nan_mask.idxmax()
+                        # Safe assignment using iat
+                        df.iat[row_idx, j] = np.nan
+                        count += 1
+
+                # Stop the loop, only if no changes were made this round
+                if count == 0:
+                    loop_superfluous = False
 
             return df
         except Exception as err:
