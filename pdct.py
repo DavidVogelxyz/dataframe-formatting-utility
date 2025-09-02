@@ -32,7 +32,7 @@ class process_df:
 
                     if isinstance(cell, str) or isinstance(cell, float) or isinstance(cell, int):
                         cell_str = str(cell).strip().lower()
-                        if 'date' in cell_str:
+                        if "date" == cell_str:
                             date_row, date_col = i, j
                             break
 
@@ -66,17 +66,21 @@ class process_df:
         try:
             # Loop over rows to check number of non-NaN values
             for i, row in df.iterrows():
-                non_nan_count = row.notna().sum()
-                if non_nan_count == 1:
-                    # If there's exactly one non-NaN value, set it to NaN
-                    row[row.notna()] = np.nan
+                non_nan_mask = row.notna()
+                if non_nan_mask.sum() == 1:
+                    # Get the column where the only non-NaN value is
+                    col_idx = non_nan_mask.idxmax()
+                    # Safe assignment without chained access
+                    df.iat[i, col_idx] = np.nan
 
             # Loop over columns to check number of non-NaN values
             for j in df.columns:
-                non_nan_count = df[j].notna().sum()
-                if non_nan_count == 1:
-                    # If there's exactly one non-NaN value, set it to NaN
-                    df[j][df[j].notna()] = np.nan
+                non_nan_mask = df[j].notna()
+                if non_nan_mask.sum() == 1:
+                    # Get the row where the only non-NaN value is
+                    row_idx = non_nan_mask.idxmax()
+                    # Safe assignment using iat
+                    df.iat[row_idx, j] = np.nan
 
             return df
         except Exception as err:
