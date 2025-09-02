@@ -53,10 +53,20 @@ def messy_03():
     default_test(test_name, test_desc, input_file, test_solution)
 
 
+def messy_04():
+    test_name = "messy_04"
+    test_desc = "Date embedded in data in new ways."
+    input_file = "tests/messy_04_input.csv"
+    test_solution = "tests/messy_04_output.csv"
+
+    default_test(test_name, test_desc, input_file, test_solution)
+
+
 def messy_tests():
     messy_01()
     messy_02()
     messy_03()
+    messy_04()
 
 
 def main():
