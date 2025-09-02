@@ -62,9 +62,31 @@ class process_df:
             print("ERROR: failed to find the 'date' --", err)
             sys.exit("Exiting the program now.")
 
+    def remove_superfluous(df):
+        try:
+            # Loop over rows to check number of non-NaN values
+            for i, row in df.iterrows():
+                non_nan_count = row.notna().sum()
+                if non_nan_count == 1:
+                    # If there's exactly one non-NaN value, set it to NaN
+                    row[row.notna()] = np.nan
+
+            # Loop over columns to check number of non-NaN values
+            for j in df.columns:
+                non_nan_count = df[j].notna().sum()
+                if non_nan_count == 1:
+                    # If there's exactly one non-NaN value, set it to NaN
+                    df[j][df[j].notna()] = np.nan
+
+            return df
+        except Exception as err:
+            print("ERROR: failed to clean the 'date' --", err)
+            sys.exit("Exiting the program now.")
+
     def date_cleanup(df, date_row, date_col):
         try:
             df.at[date_row, date_col] = np.nan      # Set the word "date" to "NaN"
+            df = process_df.remove_superfluous(df)
             df = df.dropna(axis=0, how='all')       # Drop rows
             df = df.dropna(axis=1, how='all')       # Drop columns
             df.reset_index(drop=True, inplace=True)

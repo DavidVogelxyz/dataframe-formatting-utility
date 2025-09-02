@@ -3,7 +3,7 @@ import pandas as pd
 import os
 
 
-def default_test(test_name, input_file, test_solution):
+def default_test(test_name, test_desc, input_file, test_solution):
     try:
         df_input = process_df.csv_to_dataframe(input_file)
         df_output = process_df.process_csv(df_input)
@@ -21,30 +21,42 @@ def default_test(test_name, input_file, test_solution):
         df_solution = pd.read_csv(test_solution)
 
         pd.testing.assert_frame_equal(df_answer, df_solution)
-        print(f"✅ SUCCESS: {test_name}")
+        print(f"✅ SUCCESS: {test_name} - {test_desc}")
     except Exception:
-        print(f"❌ FAIL: {test_name}")
+        print(f"❌ FAIL: {test_name} - {test_desc}")
 
 
 def messy_01():
     test_name = "messy_01"
+    test_desc = "Headers not row 0 (date above headers). Merge split columns."
     input_file = "tests/messy_01_input.csv"
     test_solution = "tests/messy_01_output.csv"
 
-    default_test(test_name, input_file, test_solution)
+    default_test(test_name, test_desc, input_file, test_solution)
 
 
 def messy_02():
     test_name = "messy_02"
+    test_desc = "Headers row 0 (date on side). Merge split columns."
     input_file = "tests/messy_02_input.csv"
     test_solution = "tests/messy_02_output.csv"
 
-    default_test(test_name, input_file, test_solution)
+    default_test(test_name, test_desc, input_file, test_solution)
+
+
+def messy_03():
+    test_name = "messy_03"
+    test_desc = "Random words at top. Date embedded in data."
+    input_file = "tests/messy_03_input.csv"
+    test_solution = "tests/messy_03_output.csv"
+
+    default_test(test_name, test_desc, input_file, test_solution)
 
 
 def messy_tests():
     messy_01()
     messy_02()
+    messy_03()
 
 
 def main():
