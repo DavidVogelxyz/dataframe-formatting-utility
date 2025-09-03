@@ -71,12 +71,32 @@ def messy_05():
     default_test(test_name, test_desc, input_file, test_solution)
 
 
+def messy_06():
+    test_name = "messy_06"
+    test_desc = "Date on top. Messiness everywhere."
+    input_file = "tests/messy_06_input.csv"
+    test_solution = "tests/messy_06_output.csv"
+
+    default_test(test_name, test_desc, input_file, test_solution)
+
+
+def messy_07():
+    test_name = "messy_07"
+    test_desc = "More mess and nonsense, but no curveballs."
+    input_file = "tests/messy_07_input.csv"
+    test_solution = "tests/messy_07_output.csv"
+
+    default_test(test_name, test_desc, input_file, test_solution)
+
+
 def messy_tests():
     messy_01()
     messy_02()
     messy_03()
     messy_04()
     messy_05()
+    messy_06()
+    messy_07()
 
 
 def main():
