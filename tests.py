@@ -89,6 +89,15 @@ def messy_07():
     default_test(test_name, test_desc, input_file, test_solution)
 
 
+def messy_08():
+    test_name = "messy_08"
+    test_desc = "Drop a duplicate column. Also random data on the side."
+    input_file = "tests/messy_08_input.csv"
+    test_solution = "tests/messy_08_output.csv"
+
+    default_test(test_name, test_desc, input_file, test_solution)
+
+
 def messy_tests():
     messy_01()
     messy_02()
@@ -97,6 +106,7 @@ def messy_tests():
     messy_05()
     messy_06()
     messy_07()
+    messy_08()
 
 
 def main():

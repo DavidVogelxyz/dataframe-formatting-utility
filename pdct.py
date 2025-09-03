@@ -54,7 +54,12 @@ class process_df:
                         possible_date = df.iloc[adj_row, adj_col]
                         if isinstance(possible_date, str) and re.match(r'\d{1,2}/\d{1,2}/\d{4}', possible_date):
                             date_value = pd.to_datetime(possible_date).strftime('%Y-%m-%d')
-                            df.at[adj_row, adj_col] = np.nan  # Set the date itself to "NaN"
+
+                            # Set the word "date" to "NaN"
+                            df.at[date_row, date_col] = np.nan
+                            # Set the date itself to "NaN"
+                            df.at[adj_row, adj_col] = np.nan
+
                             break
 
             return date_value
@@ -98,20 +103,69 @@ class process_df:
             print("ERROR: failed to clean the 'date' --", err)
             sys.exit("Exiting the program now.")
 
+    def remove_duplicate_columns(df):
+        # Create an empty set
+        duplicate_columns = set()
+
+        # Iterate through all the columns of dataframe
+        for i in range(df.shape[1]):
+
+            # Take column at index[i].
+            left = df.iloc[:, i]
+
+            # Iterate through all the remaining columns
+            for j in range(i + 1, df.shape[1]):
+
+                # Take column at index[j].
+                right = df.iloc[:, j]
+
+                # Check if two columns at i & j
+                if left.equals(right):
+                    duplicate_columns.add(df.columns.values[j])
+
+        for col in duplicate_columns:
+            df = df.drop(columns=[col])
+
+        return df
+
+    def remove_columns_with_no_headers(df):
+        # Iterate through all the columns of dataframe
+        for i in range(df.shape[1]):
+            col = df.columns[i]
+
+            if col is np.nan:
+                df = df.drop(columns=[col])
+
+        return df
+
     def date_cleanup(df, date_row, date_col):
         try:
-            df.at[date_row, date_col] = np.nan      # Set the word "date" to "NaN"
+            # Remove superfluous data
             df = process_df.remove_superfluous(df)
-            df = df.dropna(axis=0, how='all')       # Drop rows
-            df = df.dropna(axis=1, how='all')       # Drop columns
+
+            # Drop empty rows
+            df = df.dropna(axis=0, how='all')
+
+            # Drop empty columns
+            df = df.dropna(axis=1, how='all')
+
+            # Reset the index before resetting column headers
             df.reset_index(drop=True, inplace=True)
+
+            # Reset the column headers
             col_val = 0
             df.columns = df.iloc[col_val]
             df = df.drop(0)
 
+            # Remove duplicate columns, without referencing headers
+            df = process_df.remove_duplicate_columns(df)
+
+            # At this point, remove any column without a header
+            df = process_df.remove_columns_with_no_headers(df)
+
             return df
         except Exception as err:
-            print("ERROR: failed to clean the 'date' --", err)
+            print("ERROR: failed to clean the data --", err)
             sys.exit("Exiting the program now.")
 
     def split_col_merge(df):
