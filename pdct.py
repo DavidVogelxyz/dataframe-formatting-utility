@@ -28,9 +28,9 @@ class process_df:
         try:
             for i, row in df.iterrows():
                 for j, cell in enumerate(row):
-                    #print(f"Checking: {i}, {j}, {cell}")
-
-                    if isinstance(cell, str) or isinstance(cell, float) or isinstance(cell, int):
+                    if isinstance(cell, str) \
+                        or isinstance(cell, float) \
+                            or isinstance(cell, int):
                         cell_str = str(cell).strip().lower()
                         if "date" == cell_str:
                             date_row, date_col = i, j
@@ -50,10 +50,18 @@ class process_df:
                     (date_row, date_col + 1),
                     (date_row, date_col - 1)
                 ]:
-                    if 0 <= adj_row < df.shape[0] and 0 <= adj_col < df.shape[1]:
+                    if 0 <= adj_row < df.shape[0] \
+                            and 0 <= adj_col < df.shape[1]:
                         possible_date = df.iloc[adj_row, adj_col]
-                        if isinstance(possible_date, str) and re.match(r'\d{1,2}/\d{1,2}/\d{4}', possible_date):
-                            date_value = pd.to_datetime(possible_date).strftime('%Y-%m-%d')
+                        if isinstance(possible_date, str) \
+                            and re.match(
+                                r'\d{1,2}/\d{1,2}/\d{4}',
+                                possible_date
+                                ):
+                            date_value = (
+                                pd.to_datetime(possible_date)
+                                .strftime('%Y-%m-%d')
+                            )
 
                             # Set the word "date" to "NaN"
                             df.at[date_row, date_col] = np.nan
