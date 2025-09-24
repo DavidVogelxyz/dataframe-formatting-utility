@@ -1,0 +1,13 @@
+date,sector,department,id,count_1,count_2
+2023-11-29,advertising,adsales,127.8081,1864,2389
+2023-11-29,advertising,adsales,127.8084,905,9
+2023-11-29,advertising,adsales,127.8103,777,102
+2023-11-29,advertising,marketing,129.0056,10234,4823
+2023-11-29,advertising,marketing,129.0348,280108,28489
+2023-11-29,administrative,purchasing,110.6593,335,402
+2023-11-29,advertising,adsales,127.8081,1964,32829237
+2023-11-29,advertising,adsales,127.8084,303,3298
+2023-11-29,advertising,adsales,127.8103,832,32
+2023-11-29,advertising,marketing,129.0056,12091290,2912
+2023-11-29,advertising,marketing,129.0348,438,409
+2023-11-29,administrative,purchasing,110.6593,129898,1209

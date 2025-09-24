@@ -136,6 +136,18 @@ class process_df:
 
         return df
 
+    # consider looping through this until failure
+    # potentially remove more than 1 row
+    def check_bad_headers(df):
+        arr_good_values = df.count(axis=1)
+        mean_arr_good_values = np.mean(arr_good_values)
+
+        if arr_good_values[0] < mean_arr_good_values * 0.69:
+            df = df.iloc[1:]
+            df.reset_index(drop=True, inplace=True)
+
+        return df
+
     def remove_columns_with_no_headers(df):
         # Iterate through all the columns of dataframe
         for i in range(df.shape[1]):
@@ -159,6 +171,8 @@ class process_df:
 
             # Reset the index before resetting column headers
             df.reset_index(drop=True, inplace=True)
+
+            df = process_df.check_bad_headers(df)
 
             # Reset the column headers
             col_val = 0

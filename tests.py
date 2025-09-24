@@ -98,6 +98,15 @@ def messy_08():
     default_test(test_name, test_desc, input_file, test_solution)
 
 
+def messy_09():
+    test_name = "messy_09"
+    test_desc = "You cannot break my will."
+    input_file = "tests/messy_09_input.csv"
+    test_solution = "tests/messy_09_output.csv"
+
+    default_test(test_name, test_desc, input_file, test_solution)
+
+
 def messy_tests():
     messy_01()
     messy_02()
@@ -107,6 +116,7 @@ def messy_tests():
     messy_06()
     messy_07()
     messy_08()
+    messy_09()
 
 
 def main():

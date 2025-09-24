@@ -1,0 +1,9 @@
+Metadata,,,Part 1,,,,Part 2,,,
+sector,delete,department,id,count_1,count_2,,count_1,count_2,,
+advertising,,adsales,127.8081,1864,2389,,1964,32829237,,thresholds
+advertising,,adsales,127.8084,905,9,,303,3298,,100
+advertising,,adsales,127.8103,777,102,,832,32,,500
+advertising,,marketing,129.0056,10234,4823,,12091290,2912,,1000
+advertising,,marketing,129.0348,280108,28489,,438,409,,
+administrative,,purchasing,110.6593,335,402,,129898,1209,,
+,,,Date,11/29/2023,,,,,,
