@@ -100,7 +100,7 @@ def messy_08():
 
 def messy_09():
     test_name = "messy_09"
-    test_desc = "You cannot break my will."
+    test_desc = "At the end, do \"split col merge\" for uneven column labels."
     input_file = "tests/messy_09_input.csv"
     test_solution = "tests/messy_09_output.csv"
 

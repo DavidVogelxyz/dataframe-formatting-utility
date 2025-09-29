@@ -1,3 +1,4 @@
+from collections import Counter
 import numpy as np
 import pandas as pd
 import re
@@ -180,8 +181,7 @@ class process_df:
             print("ERROR: failed to clean the data --", err)
             sys.exit("Exiting the program now.")
 
-    def split_col_merge(df):
-        sets_of_duplicates = df.columns.tolist().count(df.columns[0])
+    def split_col_merge(df, sets_of_duplicates):
         group_size = len(df.columns) // sets_of_duplicates
         chunks = []
 
@@ -202,6 +202,49 @@ class process_df:
         df = df.dropna(how='all')
 
         return df
+
+    def reshape_repeated_columns(df: pd.DataFrame) -> pd.DataFrame:
+        """
+        Reshape a dataframe where some columns repeat (e.g., count_1, count_2).
+        Stacks repeated sets into a long format, keeping base columns.
+        Handles cases where pandas auto-appends .1, .2, etc.
+        """
+        # Normalize names by stripping .1, .2 suffixes
+        normalized_cols = [col.split('.')[0] for col in df.columns]
+        df = df.copy()
+        df.columns = normalized_cols
+
+        # Count duplicates
+        col_counts = Counter(df.columns)
+
+        # Base (unique) vs repeated columns
+        base_cols = [col for col in df.columns if col_counts[col] == 1]
+        repeated_cols = [col for col in df.columns if col_counts[col] > 1]
+
+        # Collect the *positions* of each repeated group
+        repeated_positions = {
+            col: [i for i, c in enumerate(df.columns) if c == col]
+            for col in repeated_cols
+        }
+
+        # Number of groups = how many times each repeated col occurs
+        num_groups = len(next(iter(repeated_positions.values())))
+
+        frames = []
+        for g in range(num_groups):
+            # Select the g-th occurrence of each repeated column
+            group_indices = (
+                [repeated_positions[col][g] for col in repeated_cols]
+            )
+            group = df.iloc[:, group_indices]
+            temp = pd.concat([df[base_cols], group], axis=1)
+            temp.columns = base_cols + repeated_cols  # normalize names
+            frames.append(temp)
+
+        result = pd.concat(frames, ignore_index=True)
+        # ✅ Ensure no duplicate columns remain
+        result = result.loc[:, ~result.columns.duplicated()]
+        return result
 
     def date_addback(df, date_value):
         try:
@@ -225,7 +268,12 @@ class process_df:
 
         # Step 4: split col merge
         if not df.columns.is_unique:
-            df = process_df.split_col_merge(df)
+            sets_of_duplicates = df.columns.tolist().count(df.columns[0])
+
+            if sets_of_duplicates >= 1:
+                df = process_df.split_col_merge(df, sets_of_duplicates)
+            if sets_of_duplicates == 1:
+                df = process_df.reshape_repeated_columns(df)
 
         # Step 5: Add the date as a new column
         df = process_df.date_addback(df, date_value)
